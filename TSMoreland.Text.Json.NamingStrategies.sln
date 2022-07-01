@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.Text.Json.SnakeCase", "src\TSMoreland.Text.Json.SnakeCase\TSMoreland.Text.Json.SnakeCase.csproj", "{5D069733-6E77-4CA5-A396-C8C83F17982F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.Text.Json.NamingStrategies", "src\TSMoreland.Text.Json.NamingStrategies\TSMoreland.Text.Json.NamingStrategies.csproj", "{6229F6B7-7F78-4DAD-AB66-4439BBE653DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,10 +16,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5D069733-6E77-4CA5-A396-C8C83F17982F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D069733-6E77-4CA5-A396-C8C83F17982F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D069733-6E77-4CA5-A396-C8C83F17982F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D069733-6E77-4CA5-A396-C8C83F17982F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6229F6B7-7F78-4DAD-AB66-4439BBE653DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6229F6B7-7F78-4DAD-AB66-4439BBE653DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6229F6B7-7F78-4DAD-AB66-4439BBE653DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6229F6B7-7F78-4DAD-AB66-4439BBE653DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

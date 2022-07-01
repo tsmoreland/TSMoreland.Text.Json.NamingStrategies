@@ -11,19 +11,24 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace TSMoreland.Text.Json;
+namespace TSMoreland.Text.Json.SnakeCase;
 
 public static class StringExtensions
 {
+    /// <summary>
+    /// Converts <paramref name="source"/> to snake_case format
+    /// </summary>
+    /// <param name="source">string to convert</param>
+    /// <returns>string without padding in snake case format</returns>
     public static string ToSnakeCase(this string source)
     {
         if (source is not { Length: > 0 })
         {
             return source;
         }
+
 
         // worst case size
         StringBuilder builder = new(source.Length * 2);
@@ -34,6 +39,11 @@ public static class StringExtensions
         for (int i = 1; i < asSpan.Length; i++)
         {
             char ch = asSpan[i];
+            if (builder.Length == 0 && char.IsWhiteSpace(ch))
+            {
+                continue;
+            }
+
 
             switch (ch)
             {
