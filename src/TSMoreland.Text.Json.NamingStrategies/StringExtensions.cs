@@ -13,7 +13,7 @@
 
 using System.Text;
 
-namespace TSMoreland.Text.Json.SnakeCase;
+namespace TSMoreland.Text.Json.NamingStrategies;
 
 public static class StringExtensions
 {
