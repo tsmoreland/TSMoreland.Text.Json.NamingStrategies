@@ -29,7 +29,6 @@ public static class StringExtensions
             return source;
         }
 
-
         // worst case size
         StringBuilder builder = new(source.Length * 2);
 
@@ -40,31 +39,43 @@ public static class StringExtensions
             char ch = asSpan[i];
             if (char.IsWhiteSpace(ch))
             {
+                if (builder.Length > 0)
+                {
+                    builder.Append('_');
+                }
+
                 continue;
             }
-
 
             switch (ch)
             {
                 case >= 'a' and <= 'z' or >= '0' and <= '9' or '_':
                     builder.Append(ch);
                     continue;
-                case '-': 
+                case '-' or '_':
                     builder.Append('_');
-                    break;
+                    continue;
             }
 
-            bool nextChangesCase = i + 1 < asSpan.Length && char.IsLower(asSpan[i + 1]);
-
-            if (ch != '_' && nextChangesCase)
+            if (builder.Length == 0)
             {
-                builder.Append('_');
+                builder.Append(char.ToLower(ch));
+                continue;
+            }
 
+            char previous = asSpan[i - 1];
+            if (previous != '_' &&  i + 1 < asSpan.Length)
+            {
+                char next = asSpan[i + 1];
+                if (!char.IsUpper(next) && !char.IsNumber(next) && next != '-' && next != '_')
+                {
+                    builder.Append('_');
+                }
             }
 
             builder.Append(char.ToLower(ch));
         }
-        return builder.ToString();
+        return builder.ToString().TrimEnd('_');
     }
 
 }
