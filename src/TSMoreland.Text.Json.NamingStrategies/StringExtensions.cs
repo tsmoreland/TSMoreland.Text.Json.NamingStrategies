@@ -34,12 +34,11 @@ public static class StringExtensions
         StringBuilder builder = new(source.Length * 2);
 
         ReadOnlySpan<char> asSpan = source.AsSpan();
-        builder.Append(char.ToLower(asSpan[0]));
 
-        for (int i = 1; i < asSpan.Length; i++)
+        for (int i = 0; i < asSpan.Length; i++)
         {
             char ch = asSpan[i];
-            if (builder.Length == 0 && char.IsWhiteSpace(ch))
+            if (char.IsWhiteSpace(ch))
             {
                 continue;
             }
@@ -50,12 +49,12 @@ public static class StringExtensions
                 case >= 'a' and <= 'z' or >= '0' and <= '9' or '_':
                     builder.Append(ch);
                     continue;
-                case '-': // kebab-case
+                case '-': 
                     builder.Append('_');
                     break;
             }
 
-            bool nextChangesCase = i + 1 < asSpan.Length && !char.IsUpper(asSpan[i + 1]) && asSpan[i + 1] != '_' && !char.IsNumber(asSpan[i + 1]);
+            bool nextChangesCase = i + 1 < asSpan.Length && char.IsLower(asSpan[i + 1]);
 
             if (ch != '_' && nextChangesCase)
             {
