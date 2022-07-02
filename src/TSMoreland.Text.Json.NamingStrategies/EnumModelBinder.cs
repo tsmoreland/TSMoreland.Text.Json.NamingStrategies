@@ -19,8 +19,8 @@ using Microsoft.Extensions.Options;
 
 namespace TSMoreland.Text.Json.NamingStrategies;
 
-public class EnumModelBinder<TEnum> : IModelBinder
-    where TEnum : struct, Enum
+public class EnumModelBinder/*<TEnum>*/ : IModelBinder
+    //where TEnum : struct, Enum
 {
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _options;
@@ -30,7 +30,7 @@ public class EnumModelBinder<TEnum> : IModelBinder
     /// </summary>
     /// <param name="options">JSON options used to verify content can be de-serialized</param>
     /// <param name="logger">logger used to log errors</param>
-    public EnumModelBinder(IOptions<JsonOptions> options, ILogger<EnumModelBinder<TEnum>> logger)
+    public EnumModelBinder(IOptions<JsonOptions> options, ILogger<EnumModelBinder> logger)
         : this(options, (ILogger)logger)
     {
     }
@@ -76,13 +76,16 @@ public class EnumModelBinder<TEnum> : IModelBinder
                 {
                     output[i + 1] = input[i];
                 }
-                output[i] = '"';
+                output[i+1] = '"';
             });
-            bindingContext.Result = ModelBindingResult.Success(JsonSerializer.Deserialize<TEnum>(jsonifiedValue, _options));
+
+            object? deserializedValue = JsonSerializer.Deserialize(jsonifiedValue, bindingContext.ModelMetadata.ModelType, _options);
+            bindingContext.Result = ModelBindingResult.Success(deserializedValue);
+            //bindingContext.Result = ModelBindingResult.Success(JsonSerializer.Deserialize<TEnum>(jsonifiedValue, _options));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to parse JSON into {EnumType}", typeof(TEnum));
+            _logger.LogError(ex, "Failed to parse JSON into {EnumType}", bindingContext.ModelMetadata.ModelType);
             bindingContext.ModelState.TryAddModelError(modelName, "Unable to convert string to enum");
         }
 
