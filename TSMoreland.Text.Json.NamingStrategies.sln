@@ -12,7 +12,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.Text.Json.Naming
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.Text.Json.NamingStrategies.Test", "test\TSMoreland.Text.Json.NamingStrategies.Test\TSMoreland.Text.Json.NamingStrategies.Test.csproj", "{C5AE558F-4246-4C9A-A7B7-C3DDA6AD9F2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSMoreland.Text.Json.NamingStrategies.SourceGenerator", "src\TSMoreland.Text.Json.NamingStrategies.SourceGenerator\TSMoreland.Text.Json.NamingStrategies.SourceGenerator.csproj", "{5E59CF18-3A3F-448D-9ED9-9E40D51C332A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.Text.Json.NamingStrategies.SourceGenerator", "src\TSMoreland.Text.Json.NamingStrategies.SourceGenerator\TSMoreland.Text.Json.NamingStrategies.SourceGenerator.csproj", "{5E59CF18-3A3F-448D-9ED9-9E40D51C332A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSMoreland.Text.Json.NamingStrategies.SampleApi", "test\TSMoreland.Text.Json.NamingStrategies.SampleApi\TSMoreland.Text.Json.NamingStrategies.SampleApi.csproj", "{32042C5B-BD24-404B-B627-B4474C1DCF74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{5E59CF18-3A3F-448D-9ED9-9E40D51C332A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E59CF18-3A3F-448D-9ED9-9E40D51C332A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E59CF18-3A3F-448D-9ED9-9E40D51C332A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32042C5B-BD24-404B-B627-B4474C1DCF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32042C5B-BD24-404B-B627-B4474C1DCF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32042C5B-BD24-404B-B627-B4474C1DCF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32042C5B-BD24-404B-B627-B4474C1DCF74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
