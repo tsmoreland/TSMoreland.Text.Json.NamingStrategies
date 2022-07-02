@@ -11,21 +11,32 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace TSMoreland.Text.Json.NamingStrategies;
+using Microsoft.CodeAnalysis.Text;
 
-public static partial class StringExtensions
+namespace TSMoreland.Text.Json.NamingStrategies.SourceGenerator;
+
+[Generator]
+public sealed class Generator : ISourceGenerator
 {
-    /// <summary>
-    /// Converts <paramref name="source"/> to kebab-case format
-    /// </summary>
-    /// <param name="source">string to convert</param>
-    /// <returns>string without padding in snake case format</returns>
-    public static partial string ToKebabCase(this string source);
+    /// <inheritdoc />
+    public void Initialize(GeneratorInitializationContext context)
+    {
+        _ = context;
+    }
 
-    /// <summary>
-    /// Converts <paramref name="source"/> to snake_case format
-    /// </summary>
-    /// <param name="source">string to convert</param>
-    /// <returns>string without padding in snake case format</returns>
-    public static partial string ToSnakeCase(this string source);
+    /// <inheritdoc />
+    public void Execute(GeneratorExecutionContext context)
+    {
+        foreach ((string filename, string content) in GetSourceFiles())
+        {
+            context.AddSource(filename, SourceText.From(content, Encoding.UTF8));
+        }
+    }
+
+    private static IEnumerable<SourceFile> GetSourceFiles()
+    {
+        yield return StringExtensionsSourceFactory.Build();
+    }
+
+
 }
