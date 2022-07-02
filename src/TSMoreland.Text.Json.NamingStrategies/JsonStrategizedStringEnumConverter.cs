@@ -20,21 +20,20 @@ namespace TSMoreland.Text.Json.NamingStrategies;
 
 /// <summary>
 /// JSON enum to string converting using a strategy defined in
-/// <see cref="IEnumNamingStrategy{TEnum}"/>
+/// <see cref="IEnumNamingStrategy"/>
 /// </summary>
 /// <typeparam name="TEnum">The Enum to convert</typeparam>
-public abstract class JsonStrategizedStringEnumConverter<TEnum> : JsonConverter<TEnum>
+public class JsonStrategizedStringEnumConverter<TEnum> : JsonConverter<TEnum>
     where TEnum : struct, Enum
 {
     private static readonly TypeCode s_enumTypeCode = Type.GetTypeCode(typeof(TEnum));
-    private readonly IEnumNamingStrategy<TEnum> _strategy;
+    private readonly IEnumNamingStrategy _strategy;
 
     /// <inheritdoc />
-    private protected JsonStrategizedStringEnumConverter(IEnumNamingStrategy<TEnum> strategy)
+    public JsonStrategizedStringEnumConverter(IEnumNamingStrategy strategy)
     {
         _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
     }
-
 
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
@@ -47,7 +46,7 @@ public abstract class JsonStrategizedStringEnumConverter<TEnum> : JsonConverter<
     {
         return reader.TokenType switch
         {
-            JsonTokenType.String => _strategy.ConvertOrThrow<JsonException>(reader.GetString().AsSpan()),
+            JsonTokenType.String => _strategy.ConvertOrThrow<TEnum, JsonException>(reader.GetString().AsSpan(), options),
             JsonTokenType.Number => ReadNumber(ref reader),
             _ => throw new JsonException("Unsupported token type")
         };
@@ -58,7 +57,9 @@ public abstract class JsonStrategizedStringEnumConverter<TEnum> : JsonConverter<
     /// </summary>
     /// <param name="reader">reader containing numeric value to read</param>
     /// <returns>value of <typeparamref name="TEnum"/> matching the read number</returns>
-    /// <exception cref="JsonException"></exception>
+    /// <exception cref="JsonException">
+    /// when unable to convert numeric value to matching enum value
+    /// </exception>
     protected virtual TEnum ReadNumber(ref Utf8JsonReader reader)
     {
         switch (s_enumTypeCode)
@@ -120,13 +121,6 @@ public abstract class JsonStrategizedStringEnumConverter<TEnum> : JsonConverter<
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
     {
-        if (_strategy.SupportsConversionToJsonEncodedText)
-        {
-            writer.WriteStringValue(_strategy.ConvertToEncoded(value));
-        }
-        else
-        {
-            writer.WriteStringValue(JsonEncodedText.Encode(_strategy.Convert(value), options.Encoder));
-        }
+        writer.WriteStringValue(_strategy.ConvertToEncoded(value, options));
     }
 }
