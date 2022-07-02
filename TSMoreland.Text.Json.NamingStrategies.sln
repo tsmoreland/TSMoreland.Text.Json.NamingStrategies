@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.Text.Json.Naming
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSMoreland.Text.Json.NamingStrategies.SampleApi", "test\TSMoreland.Text.Json.NamingStrategies.SampleApi\TSMoreland.Text.Json.NamingStrategies.SampleApi.csproj", "{32042C5B-BD24-404B-B627-B4474C1DCF74}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D5C44B06-6637-4455-A2D3-C5EE69DE9831}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C5AE558F-4246-4C9A-A7B7-C3DDA6AD9F2F} = {D5C44B06-6637-4455-A2D3-C5EE69DE9831}
+		{32042C5B-BD24-404B-B627-B4474C1DCF74} = {D5C44B06-6637-4455-A2D3-C5EE69DE9831}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2388F96D-5EF4-4EC3-966C-2B051EC45D92}

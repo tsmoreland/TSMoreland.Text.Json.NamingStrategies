@@ -11,33 +11,21 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc;
-using TSMoreland.Text.Json.NamingStrategies.SampleApi.Models;
+using System.Text.Json;
+using TSMoreland.Text.Json.NamingStrategies.NamingPolicies;
 
-namespace TSMoreland.Text.Json.NamingStrategies.SampleApi.Controllers
+namespace TSMoreland.Text.Json.NamingStrategies;
+
+public static class JsonStrategizedNamingPolicy
 {
-    [Route("api/animal_says")]
-    [ApiController]
-    public class AnimalSaysController : ControllerBase
-    {
-        public sealed record AnimalSays(Animal AnimalType, string Says);
+    /// <summary>
+    /// Returns the naming policy for snake_case
+    /// </summary>
+    public static JsonNamingPolicy SnakeCase { get; } = new JsonSnakeCaseNamingPolicy();
 
-        [HttpGet("{animal}")]
-        [Produces(MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml)]
-        [Consumes(MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml)]
-        public IActionResult Speak(Animal animal)
-        {
-            return animal switch
-            {
-                Animal.Cat => Ok(new AnimalSays(animal, "meow")),
-                Animal.Dog => Ok(new AnimalSays(animal, "woof")),
-                Animal.Mouse => Ok(new AnimalSays(animal, "squeak")),
-                Animal.REDFox => Ok(new AnimalSays(animal, "sqeee")),
-                Animal.TimberWolf => Ok(new AnimalSays(animal, "OwwwOoOoO")),
-                _ => BadRequest()
-            };
-        }
+    /// <summary>
+    /// Returns the naming policy for kebab_case
+    /// </summary>
+    public static JsonNamingPolicy KebabCase { get; } = new JsonKebabCaseNamingPolicy();
 
-    }
 }
