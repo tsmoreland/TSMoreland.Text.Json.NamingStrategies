@@ -16,11 +16,9 @@ using System.Text.Json;
 namespace TSMoreland.Text.Json.NamingStrategies.Strategies;
 
 /// <summary>
-/// Naming strategy used to convert <typeparamref name="TEnum"/> to string and back
+/// Naming strategy used to convert enums to string and back
 /// </summary>
-/// <typeparam name="TEnum">the enum to convert</typeparam>
-internal interface IEnumNamingStrategy<TEnum>
-    where TEnum : struct, Enum
+public interface IEnumNamingStrategy
 {
     /// <summary>
     /// Returns true if the naming strategy can convert <paramref name="type"/>; in most if not all cases
@@ -37,21 +35,19 @@ internal interface IEnumNamingStrategy<TEnum>
     /// Converts <paramref name="value"/> to string
     /// </summary>
     /// <param name="value">value to convert</param>
+    /// <param name="options">used to encode <paramref name="value"/></param>
     /// <returns>
     /// string representation of <paramref name="value"/> formatted using the
     /// naming strategy of this instance
     /// </returns>
-    public string Convert(TEnum value);
-
-    /// <summary>
-    /// Returns <see langword="true"/> if instance supports <see cref="ConvertToEncoded(TEnum)"/>
-    /// </summary>
-    public bool SupportsConversionToJsonEncodedText { get; }
+    public string Convert<TEnum>(TEnum value, JsonSerializerOptions options)
+        where TEnum : struct, Enum;
 
     /// <summary>
     /// Converts <paramref name="value"/> to an instance of <see cref="JsonEncodedText"/>
     /// </summary>
     /// <param name="value">value to convert</param>
+    /// <param name="options">used to encode <paramref name="value"/></param>
     /// <returns>
     /// string representation of <paramref name="value"/> formatted using the
     /// naming strategy of this instance
@@ -59,43 +55,45 @@ internal interface IEnumNamingStrategy<TEnum>
     /// <exception cref="NotSupportedException">
     /// if this strategy does not support conversion to JsonEncodedText
     /// </exception>
-    public ref readonly JsonEncodedText ConvertToEncoded(TEnum value);
+    public JsonEncodedText ConvertToEncoded<TEnum>(TEnum value, JsonSerializerOptions options)
+        where TEnum : struct, Enum;
 
     /// <summary>
     /// Converts <paramref name="value"/> to matching value of <typeparamref name="TEnum"/>
     /// </summary>
     /// <param name="value">value to convert</param>
+    /// <param name="options"></param>
     /// <returns>
     /// <typeparamref name="TEnum"/> converted from <paramref name="value"/>
     /// </returns>
     /// <exception cref="Exception">
     /// <see cref="Exception"/> of type <typeparamref name="TException"/>
     /// if <paramref name="value"/> does not match a value in
-    /// <typeparamref name="TEnum"/> converted to string by <see cref="Convert(TEnum)"/>
+    /// <typeparamref name="TEnum"/> converted to string by <see cref="Convert{TEnum}(TEnum, JsonSerializerOptions)"/>
     /// </exception>
-    public TEnum ConvertOrThrow<TException>(ReadOnlySpan<char> value)
+    public TEnum ConvertOrThrow<TEnum, TException>(ReadOnlySpan<char> value, JsonSerializerOptions options)
+        where TEnum : struct, Enum
         where TException : Exception, new ();
 
     /// <summary>
     /// Converts <paramref name="value"/> to matching value of <typeparamref name="TEnum"/>
     /// </summary>
     /// <param name="value">value to convert</param>
+    /// <param name="options"></param>
     /// <returns>
     /// <typeparamref name="TEnum"/> converted from <paramref name="value"/>
     /// </returns>
     /// <exception cref="Exception">
     /// <see cref="Exception"/> of type <typeparamref name="TException"/>
     /// if <paramref name="value"/> is <see langword="null"/> or does not match a value in
-    /// <typeparamref name="TEnum"/> converted to string by <see cref="ConvertOrThrow(TEnum)"/>
+    /// <typeparamref name="TEnum"/> converted to string by <see cref="ConvertOrThrow{TEnum, TException}(ReadOnlySpan{char}, JsonSerializerOptions)"/>
     /// </exception>
-    public TEnum ConvertOrThrow<TException>(string? value)
+    public TEnum ConvertOrThrow<TEnum, TException>(string? value, JsonSerializerOptions options)
+        where TEnum : struct, Enum
         where TException : Exception, new()
     {
-        if (value is null)
-        {
-            throw new TException();
-        }
-
-        return ConvertOrThrow<TException>(value.AsSpan());
+        return value is not null
+            ? ConvertOrThrow<TEnum, TException>(value.AsSpan(), options)
+            : throw new TException();
     }
 }
