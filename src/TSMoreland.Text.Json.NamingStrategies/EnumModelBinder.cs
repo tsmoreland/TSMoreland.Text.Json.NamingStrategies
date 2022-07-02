@@ -19,14 +19,13 @@ using Microsoft.Extensions.Options;
 
 namespace TSMoreland.Text.Json.NamingStrategies;
 
-public class EnumModelBinder/*<TEnum>*/ : IModelBinder
-    //where TEnum : struct, Enum
+public class EnumModelBinder : IModelBinder
 {
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _options;
 
     /// <summary>
-    /// Initialises a new instance of the <see cref="EnumModelBinder{T}"/> class.
+    /// Initialises a new instance of the <see cref="EnumModelBinder"/> class.
     /// </summary>
     /// <param name="options">JSON options used to verify content can be de-serialized</param>
     /// <param name="logger">logger used to log errors</param>
@@ -37,7 +36,7 @@ public class EnumModelBinder/*<TEnum>*/ : IModelBinder
 
 
     /// <summary>
-    /// Initialises a new instance of the <see cref="EnumModelBinder{T}"/> class.
+    /// Initialises a new instance of the <see cref="EnumModelBinder"/> class.
     /// </summary>
     /// <param name="options">JSON options used to verify content can be de-serialized</param>
     /// <param name="logger">logger used to log errors</param>
@@ -81,7 +80,6 @@ public class EnumModelBinder/*<TEnum>*/ : IModelBinder
 
             object? deserializedValue = JsonSerializer.Deserialize(jsonifiedValue, bindingContext.ModelMetadata.ModelType, _options);
             bindingContext.Result = ModelBindingResult.Success(deserializedValue);
-            //bindingContext.Result = ModelBindingResult.Success(JsonSerializer.Deserialize<TEnum>(jsonifiedValue, _options));
         }
         catch (Exception ex)
         {
