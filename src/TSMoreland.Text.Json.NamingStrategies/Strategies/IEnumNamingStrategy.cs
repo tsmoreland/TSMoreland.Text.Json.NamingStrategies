@@ -22,11 +22,10 @@ public interface IEnumNamingStrategy
 {
     /// <summary>
     /// Returns true if the naming strategy can convert <paramref name="type"/>; in most if not all cases
-    /// this will only return true if <paramref name="type"/> matches <typeparamref name="TEnum"/>
     /// </summary>
     /// <param name="type">the type to check</param>
     /// <returns>
-    /// <see langword="true"/> if <paramref name="type"/> matches <typeparamref name="TEnum"/>
+    /// <see langword="true"/> if <paramref name="type"/> can be converted by this type
     /// as well as any further filters the strategy chooses to apply.
     /// </returns>
     public bool CanConvert(Type type);
