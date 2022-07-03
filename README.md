@@ -1,4 +1,4 @@
-# TSMoreland.Text.Json
+# TSMoreland.Text.Json.NamingStrategies
 
 [![.NET](https://github.com/tsmoreland/TSMoreland.Text.Json.NamingStrategies/actions/workflows/dotnet.yml/badge.svg)](https://github.com/tsmoreland/TSMoreland.Text.Json.NamingStrategies/actions/workflows/dotnet.yml)
 
