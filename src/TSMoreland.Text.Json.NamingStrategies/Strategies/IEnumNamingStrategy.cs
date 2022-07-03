@@ -72,7 +72,7 @@ public interface IEnumNamingStrategy
     /// </exception>
     public TEnum ConvertOrThrow<TEnum, TException>(ReadOnlySpan<char> value, JsonSerializerOptions options)
         where TEnum : struct, Enum
-        where TException : Exception, new ();
+        where TException : Exception, new();
 
     /// <summary>
     /// Converts <paramref name="value"/> to matching value of <typeparamref name="TEnum"/>

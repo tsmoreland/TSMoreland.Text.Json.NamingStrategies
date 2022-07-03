@@ -75,7 +75,7 @@ public class EnumModelBinder : IModelBinder
                 {
                     output[i + 1] = input[i];
                 }
-                output[i+1] = '"';
+                output[i + 1] = '"';
             });
 
             object? deserializedValue = JsonSerializer.Deserialize(jsonifiedValue, bindingContext.ModelMetadata.ModelType, _options);

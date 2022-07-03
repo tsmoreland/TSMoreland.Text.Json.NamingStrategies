@@ -24,6 +24,6 @@ public enum Animal
     // ReSharper disable once InconsistentNaming
     REDFox,
 
-    [EnumMember(Value="wolf")]
+    [EnumMember(Value = "wolf")]
     TimberWolf,
 }
