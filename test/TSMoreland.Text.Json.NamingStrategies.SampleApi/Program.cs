@@ -4,6 +4,8 @@ using TSMoreland.Text.Json.NamingStrategies.Strategies;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+
 builder.Services
     .AddProblemDetails()
     .AddScoped<IEnumNamingStrategy, SnakeCaseEnumNamingStrategy>()

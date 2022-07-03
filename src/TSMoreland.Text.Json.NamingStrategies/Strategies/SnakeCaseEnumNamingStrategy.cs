@@ -13,6 +13,7 @@
 
 using System.Collections;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text.Json;
 
 namespace TSMoreland.Text.Json.NamingStrategies.Strategies;
@@ -91,9 +92,26 @@ public sealed class SnakeCaseEnumNamingStrategy : IEnumNamingStrategy
             return valueByEncodedText;
         }
 
+        Dictionary<string, string?> enumMemberValueByName = key
+            .GetTypeInfo()
+            .DeclaredMembers
+            .ToDictionary(m => m.Name, m => m.GetCustomAttribute<EnumMemberAttribute>()?.Value);
+
         valueByEncodedText = Enum.GetValues<TEnum>()
             .ToDictionary(
-                v => JsonEncodedText.Encode(v.ToString().ToSnakeCase(), options.Encoder),
+                v =>
+                {
+                    string name = v.ToString();
+                    if (enumMemberValueByName.TryGetValue(name, out string? enumMemberValue) &&
+                        enumMemberValue is { Length: > 0 })
+                    {
+                        return JsonEncodedText.Encode(enumMemberValue, options.Encoder);
+                    }
+                    else
+                    {
+                        return JsonEncodedText.Encode(v.ToString().ToSnakeCase(), options.Encoder);
+                    }
+                },
                 v => v);
         _encodedValuesByType[key] = valueByEncodedText;
         return valueByEncodedText;
