@@ -18,7 +18,7 @@ using TSMoreland.Text.Json.NamingStrategies.Strategies;
 
 namespace TSMoreland.Text.Json.NamingStrategies;
 
-public /*abstract*/ class JsonStrategizedStringEnumConverterFactory : JsonConverterFactory
+public sealed class JsonStrategizedStringEnumConverterFactory : JsonConverterFactory
 {
     private readonly IEnumNamingStrategy _strategy;
 
