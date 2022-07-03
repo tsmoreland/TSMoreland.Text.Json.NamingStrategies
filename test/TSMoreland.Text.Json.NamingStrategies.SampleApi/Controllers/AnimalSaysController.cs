@@ -11,34 +11,33 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.ComponentModel;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using TSMoreland.Text.Json.NamingStrategies.SampleApi.Models;
 
-namespace TSMoreland.Text.Json.NamingStrategies.SampleApi.Controllers
+namespace TSMoreland.Text.Json.NamingStrategies.SampleApi.Controllers;
+
+[Route("api/animal_says")]
+[ApiController]
+[Tags("animal_says")]
+public class AnimalSaysController : ControllerBase
 {
-    [Route("api/animal_says")]
-    [ApiController]
-    public class AnimalSaysController : ControllerBase
+    public sealed record AnimalSays(Animal AnimalType, string Says);
+
+    [HttpGet("{animal}")]
+    [Produces(MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml)]
+    [Consumes(MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml)]
+    public IActionResult Speak(Animal animal)
     {
-        public sealed record AnimalSays(Animal AnimalType, string Says);
-
-        [HttpGet("{animal}")]
-        [Produces(MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml)]
-        [Consumes(MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml)]
-        public IActionResult Speak(Animal animal)
+        return animal switch
         {
-            return animal switch
-            {
-                Animal.Cat => Ok(new AnimalSays(animal, "meow")),
-                Animal.Dog => Ok(new AnimalSays(animal, "woof")),
-                Animal.Mouse => Ok(new AnimalSays(animal, "squeak")),
-                Animal.REDFox => Ok(new AnimalSays(animal, "sqeee")),
-                Animal.TimberWolf => Ok(new AnimalSays(animal, "OwwwOoOoO")),
-                _ => BadRequest()
-            };
-        }
-
+            Animal.Cat => Ok(new AnimalSays(animal, "meow")),
+            Animal.Dog => Ok(new AnimalSays(animal, "woof")),
+            Animal.Mouse => Ok(new AnimalSays(animal, "squeak")),
+            Animal.REDFox => Ok(new AnimalSays(animal, "sqeee")),
+            Animal.TimberWolf => Ok(new AnimalSays(animal, "OwwwOoOoO")),
+            _ => BadRequest()
+        };
     }
+
 }

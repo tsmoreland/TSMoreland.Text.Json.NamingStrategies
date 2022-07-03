@@ -66,7 +66,7 @@ public class EnumModelBinder : IModelBinder
 
         try
         {
-            string jsonifiedValue = string.Create(value.Length + 2, value, static (Span<char> output, string state) =>
+            string jsonifiedValue = string.Create(value.Length + 2, value, static (output, state) =>
             {
                 ReadOnlySpan<char> input = state.AsSpan();
                 output[0] = '"';
