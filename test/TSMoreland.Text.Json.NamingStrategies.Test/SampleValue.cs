@@ -48,7 +48,7 @@ public enum SampleUInt64Value : ulong
 public enum SampleInt16Value : short
 {
     None = 0,
-   Alpha = (short)1,
+    Alpha = (short)1,
 };
 public enum SampleUInt16Value : ushort
 {
