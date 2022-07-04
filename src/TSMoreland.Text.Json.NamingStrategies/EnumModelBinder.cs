@@ -43,13 +43,17 @@ public class EnumModelBinder : IModelBinder
     protected EnumModelBinder(IOptions<JsonOptions> options, ILogger logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(options, nameof(options));
         _options = options.Value.JsonSerializerOptions;
     }
 
     /// <inheritdoc />
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        ArgumentNullException.ThrowIfNull(bindingContext, nameof(bindingContext));
+        if (bindingContext == null!)
+        {
+            return Task.FromException(new ArgumentNullException(nameof(bindingContext)));
+        }
 
         string modelName = bindingContext.ModelName;
         ValueProviderResult providerResult = bindingContext.ValueProvider.GetValue(modelName);
@@ -66,6 +70,12 @@ public class EnumModelBinder : IModelBinder
 
         try
         {
+            if (char.IsNumber(value[0])) // content is a number, let it be deserialized as such
+            {
+                bindingContext.Result = ModelBindingResult.Success(JsonSerializer.Deserialize(value, bindingContext.ModelMetadata.ModelType, _options));
+                return Task.CompletedTask;
+            }
+
             string jsonifiedValue = string.Create(value.Length + 2, value, static (output, state) =>
             {
                 ReadOnlySpan<char> input = state.AsSpan();

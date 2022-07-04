@@ -68,3 +68,10 @@ public enum SampleByteValue : byte
     Alpha = (byte)1,
 }
 
+[Flags]
+public enum SampleFlags
+{
+    Alpha = 1,
+    Bravo = 2,
+    Charlie = 4,
+}

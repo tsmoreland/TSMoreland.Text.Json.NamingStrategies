@@ -36,7 +36,7 @@ public class EnumModelBinderProvider : IModelBinderProvider
             : null;
     }
 
-    private bool HasFlagsAttribute(Type type)
+    private bool HasFlagsAttribute(MemberInfo type)
     {
         if (_typesWithFlagsAttribute[type] is bool hasFlag)
         {
