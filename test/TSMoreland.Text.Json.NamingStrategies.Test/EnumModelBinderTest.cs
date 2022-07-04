@@ -11,10 +11,14 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Text.Json;
+using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace TSMoreland.Text.Json.NamingStrategies.Test;
 
@@ -22,12 +26,28 @@ public sealed class EnumModelBinderTest
 {
     private readonly ILogger<EnumModelBinder> _logger;
     private readonly IOptions<JsonOptions> _options;
+    private readonly Mock<ModelMetadata> _sampleValueModelMetaData;
+    private ModelBindingResult? _bindingResult;
 
     public EnumModelBinderTest()
     {
         _logger = new LoggerFactory().CreateLogger<EnumModelBinder>();
         _options = Options.Create(new JsonOptions());
+        _options.Value.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+
+        PropertyInfo propertyInfo = typeof(EnumModelBinderTest)
+            .GetProperty(nameof(EnumProperty),
+                BindingFlags.Public | BindingFlags.Instance)!;
+        ModelMetadataIdentity metaDataIdentity = ModelMetadataIdentity.ForProperty(
+            propertyInfo,
+            typeof(SampleValue),
+            typeof(EnumModelBinderTest));
+
+        _sampleValueModelMetaData = new Mock<ModelMetadata>(metaDataIdentity);
     }
+
+    public SampleValue EnumProperty { get; } = SampleValue.Alpha;
 
     [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenLoggerIsNull()
@@ -57,11 +77,75 @@ public sealed class EnumModelBinderTest
         task.Should().Match<Task>(t => t.IsFaulted);
     }
 
+    /// <remarks>
+    /// this method is excessively complicated and while it was good to verify once it's not worth
+    /// maintaining, going forward a pseudo-integration test or asp.net core controller test would
+    /// be better placed to verify this
+    /// </remarks>
     [Fact]
     public void BindModelAsync_SetsSuccessfulBindingResult_WhenModelTypeIsEnumAndStringCanBeDeserialized()
     {
+        (Mock<MockModelBindingContext> context, ModelStateDictionary modelState) =
+            ArrangeBindModel("key", SampleValue.Bravo.ToString(), typeof(SampleValue));
         EnumModelBinder binder = new(_options, _logger);
 
+        binder.BindModelAsync(context.Object).Wait(CancellationToken.None);
+
+        _bindingResult.Should()
+            .NotBeNull()
+            .And
+            .Match<ModelBindingResult>(r => r.IsModelSet)
+            .And
+            .Match<ModelBindingResult>(r => r.Model!.Equals(SampleValue.Bravo));
     }
 
+    [Fact]
+    public void BindModelAsync_SetsSuccessfulBindingResult_WhenModelTypeIsEnumAndNumberCanBeDeserialized()
+    {
+        (Mock<MockModelBindingContext> context, ModelStateDictionary modelState) =
+            ArrangeBindModel("key", ((int)SampleValue.Bravo).ToString(), typeof(SampleValue));
+        EnumModelBinder binder = new(_options, _logger);
+
+        binder.BindModelAsync(context.Object).Wait(CancellationToken.None);
+
+        _bindingResult.Should()
+            .NotBeNull()
+            .And
+            .Match<ModelBindingResult>(r => r.IsModelSet)
+            .And
+            .Match<ModelBindingResult>(r => r.Model!.Equals(SampleValue.Bravo));
+    }
+
+    private (Mock<MockModelBindingContext> Context, ModelStateDictionary modelState) ArrangeBindModel(
+        string modelName,
+        string modelValue,
+        Type modelType)
+    {
+        Mock<MockModelBindingContext> context = new();
+        Mock<IValueProvider> valueProvider = new();
+        ValueProviderResult providerResult = new(new StringValues(modelValue));
+        context.SetupGet(m => m.ModelName).Returns(modelName);
+        context.SetupGet(m => m.ValueProvider).Returns(valueProvider.Object);
+        valueProvider.Setup(m => m.GetValue(modelName)).Returns(providerResult);
+        ModelStateDictionary modelState = new();
+        context.SetupGet(m => m.ModelState).Returns(modelState);
+
+        Mock<ModelMetadata> metadata = new(ModelMetadataIdentity.ForType(modelType));
+        context.SetupGet(m => m.ModelMetadata).Returns(metadata.Object);
+        context
+            .SetupSet(m => m.Result = It.IsAny<ModelBindingResult>())
+            .Callback<ModelBindingResult>(result => _bindingResult = result);
+
+        return (context, modelState);
+    }
+
+    public abstract class MockModelBindingContext : ModelBindingContext
+    {
+        // ReSharper disable once PublicConstructorInAbstractClass
+#pragma warning disable S3442 // "abstract" classes should not have "public" constructors
+        public MockModelBindingContext()
+#pragma warning restore S3442 // "abstract" classes should not have "public" constructors
+        {
+        }
+    }
 }
