@@ -29,7 +29,7 @@ public sealed class JsonStrategizedStringEnumConverterTest
     [Fact]
     public void Constructor_Throws_ArgumentNullException_WhenStrategyIsNull()
     {
-        ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _ = new JsonStrategizedStringEnumConverter<SampleValues>(null!));
+        ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _ = new JsonStrategizedStringEnumConverter<SampleValue>(null!));
         ex.Should()
             .NotBeNull()
             .And
@@ -42,26 +42,147 @@ public sealed class JsonStrategizedStringEnumConverterTest
     public void CanConvert_ReturnsStrategyCanConvert(bool expected)
     {
         _mockStrategy.Setup(m => m.CanConvert(It.IsAny<Type>())).Returns(expected);
-        JsonStrategizedStringEnumConverter<SampleValues> converter = new(_mockStrategy.Object);
-        bool actual = converter.CanConvert(typeof(SampleValues));
+        JsonStrategizedStringEnumConverter<SampleValue> converter = new(_mockStrategy.Object);
+        bool actual = converter.CanConvert(typeof(SampleValue));
         actual.Should().Be(expected);
     }
 
     [Fact]
     public void Read_ThrowsJsonException_WhenReaderTokenIsNotStringOrNumber()
     {
-        JsonStrategizedStringEnumConverter<SampleValues> converter = new(_mockStrategy.Object);
+        JsonStrategizedStringEnumConverter<SampleValue> converter = new(_mockStrategy.Object);
 
         JsonException ex = Assert
             .Throws<JsonException>(() =>
             {
                 byte[] utf8 = Encoding.UTF8.GetBytes(@"{""exists"":false}");
                 Utf8JsonReader reader = new(utf8.AsSpan(), true, new JsonReaderState());
-                converter.Read(ref reader, typeof(SampleValues), new JsonSerializerOptions());
+                converter.Read(ref reader, typeof(SampleValue), new JsonSerializerOptions());
             });
         ex.Should().NotBeNull();
     }
 
+    [Theory]
+    [MemberData(nameof(EnumValues))]
+    public void Read_ReturnsStrategyConvertOrThrowResult_WhenTokenIsString(SampleValue expected)
+    {
+        SampleEnumNamingStrategy strategy = new(convertedValue: expected);
+        JsonStrategizedStringEnumConverter<SampleValue> converter = new(strategy);
+        byte[] utf8 = Encoding.UTF8.GetBytes($"\"[{expected}]\"");
+        Utf8JsonReader reader = new(utf8.AsSpan(), true, new JsonReaderState());
+
+        reader.Read();
+        SampleValue actual = converter.Read(ref reader, typeof(SampleValue), new JsonSerializerOptions());
+
+        actual.Should().Be(expected);
+        strategy.ConvertOrThrowCallCount.Should().Be(1);
+    }
+
+    [Theory]
+    [MemberData(nameof(EnumValues))]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumber(SampleValue expected)
+    {
+        SampleEnumNamingStrategy strategy = new();
+        JsonStrategizedStringEnumConverter<SampleValue> converter = new(strategy);
+        byte[] utf8 = Encoding.UTF8.GetBytes($"{(int)expected}");
+        Utf8JsonReader reader = new(utf8.AsSpan(), true, new JsonReaderState());
+
+        reader.Read();
+        SampleValue actual = converter.Read(ref reader, typeof(SampleValue), new JsonSerializerOptions());
+
+        actual.Should().Be(expected);
+        strategy.ConvertOrThrowCallCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsUInt32() =>
+        VerifyEnumFromNumber($"{(ulong)SampleUInt32Value.Alpha}", SampleUInt32Value.Alpha);
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsInt64() =>
+        VerifyEnumFromNumber($"{(long)SampleInt64Value.Alpha}", SampleInt64Value.Alpha);
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsUInt64() =>
+        VerifyEnumFromNumber($"{(ulong)SampleUInt64Value.Alpha}", SampleUInt64Value.Alpha);
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsInt16() =>
+        VerifyEnumFromNumber($"{(short)SampleInt16Value.Alpha}", SampleInt16Value.Alpha);
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsUInt16() =>
+        VerifyEnumFromNumber($"{(ushort)SampleUInt16Value.Alpha}", SampleUInt16Value.Alpha);
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsByte() =>
+        VerifyEnumFromNumber($"{(byte)SampleByteValue.Alpha}", SampleByteValue.Alpha);
+
+    [Fact]
+    public void Read_ReturnsExpectedValue_WhenTokenIsNumberAndEnumNumberTypeIsSByte() =>
+        VerifyEnumFromNumber($"{(sbyte)SampleSByteValue.Alpha}", SampleSByteValue.Alpha);
+
+    [Fact]
+    public void Read_ThrowsJsonException_WhenTokenIsNumberButOutOfTypeRange()
+    {
+        SampleEnumNamingStrategy strategy = new();
+        JsonStrategizedStringEnumConverter<SampleByteValue> converter = new(strategy);
+
+        JsonException ex = Assert
+            .Throws<JsonException>(() =>
+            {
+                byte[] utf8 = Encoding.UTF8.GetBytes($"{(long)SampleInt64Value.Alpha}");
+                Utf8JsonReader reader = new(utf8.AsSpan(), true, new JsonReaderState());
+                reader.Read();
+
+                _ = converter.Read(ref reader, typeof(SampleByteValue), new JsonSerializerOptions());
+            });
+        ex.Should().NotBeNull();
+    }
+
+    private static void VerifyEnumFromNumber<TEnum>(string jsonValue, TEnum expected)
+        where TEnum : struct, Enum
+    {
+        SampleEnumNamingStrategy strategy = new();
+        JsonStrategizedStringEnumConverter<TEnum> converter = new(strategy);
+        byte[] utf8 = Encoding.UTF8.GetBytes(jsonValue);
+        Utf8JsonReader reader = new(utf8.AsSpan(), true, new JsonReaderState());
+
+        reader.Read();
+        TEnum actual = converter.Read(ref reader, typeof(TEnum), new JsonSerializerOptions());
+
+        actual.Should().Be(expected);
+        strategy.ConvertOrThrowCallCount.Should().Be(0);
+    }
+
+
+    [Theory]
+    [MemberData(nameof(EnumValues))]
+    public void Write_ReturnsStrategyConvertToEncodedResult(SampleValue source)
+    {
+        string expected = $"[{source}]";
+        SampleEnumNamingStrategy strategy = new(convertedText: JsonEncodedText.Encode(expected, new JsonSerializerOptions().Encoder));
+        expected = $"\"{expected}\"";
+        JsonStrategizedStringEnumConverter<SampleValue> converter = new(strategy);
+
+        using MemoryStream stream = new(new byte[128], 0, 128, true);
+        Utf8JsonWriter writer = new(stream);
+        converter.Write(writer, source, new JsonSerializerOptions());
+        writer.Flush();
+        stream.Position = 0;
+
+        using StreamReader reader = new(stream, Encoding.UTF8, true, 128, leaveOpen: true);
+        string actual = reader.ReadToEnd().Trim('\0');
+
+        actual.Should().Be(expected);
+    }
+
+
+
+    private static IEnumerable<object[]> EnumValues()
+    {
+        return Enum.GetValues<SampleValue>().Select(value => new object[] { value });
+    }
 
     /// <summary>
     /// Minimal implementation intended for mocking becuase Moq/NSubstite can't deal with
@@ -85,6 +206,9 @@ public sealed class JsonStrategizedStringEnumConverterTest
             _convertedValue = convertedValue;
             _convertedText = convertedText;
         }
+        public int ConvertCallCount { get; private set; }
+        public int ConvertToEncodedCallCount { get; private set; }
+        public int ConvertOrThrowCallCount { get; private set; }
 
         /// <inheritdoc />
         public bool CanConvert(Type type) => _canConvert;
@@ -93,6 +217,7 @@ public sealed class JsonStrategizedStringEnumConverterTest
         public string Convert<TEnum>(TEnum value, JsonSerializerOptions options)
             where TEnum : struct, Enum
         {
+            ConvertCallCount++;
             return _convertedString;
         }
 
@@ -100,6 +225,7 @@ public sealed class JsonStrategizedStringEnumConverterTest
         public JsonEncodedText ConvertToEncoded<TEnum>(TEnum value, JsonSerializerOptions options)
             where TEnum : struct, Enum
         {
+            ConvertToEncodedCallCount++;
             return _convertedText;
         }
 
@@ -107,6 +233,7 @@ public sealed class JsonStrategizedStringEnumConverterTest
         public TEnum ConvertOrThrow<TEnum, TException>(ReadOnlySpan<char> value, JsonSerializerOptions options)
             where TEnum : struct, Enum where TException : Exception, new()
         {
+            ConvertOrThrowCallCount++;
             if (_convertedValue is null)
             {
                 throw new TException();

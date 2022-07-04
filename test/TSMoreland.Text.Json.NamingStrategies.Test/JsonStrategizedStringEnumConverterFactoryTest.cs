@@ -49,11 +49,11 @@ public sealed class JsonStrategizedStringEnumConverterFactoryTest
     public void CreateConverter_ReturnsNonNull_WhenCanConvert_OtherwiseNull(bool canConvert, bool expectNull)
     {
         _strategy
-            .Setup(m => m.CanConvert(typeof(SampleValues)))
+            .Setup(m => m.CanConvert(typeof(SampleValue)))
             .Returns(canConvert);
 
         JsonStrategizedStringEnumConverterFactory factory = new(_strategy.Object);
-        JsonConverter? converter = factory.CreateConverter(typeof(SampleValues), new JsonSerializerOptions());
+        JsonConverter? converter = factory.CreateConverter(typeof(SampleValue), new JsonSerializerOptions());
 
         if (expectNull)
         {

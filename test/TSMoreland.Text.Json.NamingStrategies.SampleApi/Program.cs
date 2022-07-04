@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;

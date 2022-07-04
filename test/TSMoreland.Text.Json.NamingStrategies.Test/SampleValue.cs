@@ -14,23 +14,57 @@ using System.Runtime.Serialization;
 
 namespace TSMoreland.Text.Json.NamingStrategies.Test;
 
-public enum SampleValues
+public enum SampleValue
 {
-    Alpha,
-    Bravo,
-    Charlie,
-    DeltaFoxtrot,
-
-    // ReSharper disable once InconsistentNaming
-    UTCZulu,
-
-    [EnumMember(Value = "Golf")]
-    Golf,
-}
-
-public enum SampleFlags
-{
-    Alpha = 1,
+    Alpha = 0,
     Bravo = 2,
     Charlie = 4,
+    DeltaFoxtrot = 6,
+
+    // ReSharper disable once InconsistentNaming
+    UTCZulu = 8,
+
+    [EnumMember(Value = "Golf")]
+    Golf = 10,
 }
+
+public enum SampleUInt32Value : uint
+{
+    None = 0,
+    Alpha = 1u,
+};
+
+public enum SampleInt64Value : long
+{
+    None = 0,
+    Alpha = 1_000_000L,
+};
+public enum SampleUInt64Value : ulong
+{
+    None = 0,
+    Alpha = 1_000_000uL,
+};
+
+public enum SampleInt16Value : short
+{
+    None = 0,
+   Alpha = (short)1,
+};
+public enum SampleUInt16Value : ushort
+{
+    None = 0,
+    Alpha = (ushort)1u,
+};
+
+public enum SampleSByteValue : sbyte
+{
+    None = 0,
+    Alpha = (sbyte)1,
+}
+
+public enum SampleByteValue : byte
+{
+    None = 0,
+    Alpha = (byte)1,
+}
+
