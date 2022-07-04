@@ -11,7 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -26,7 +25,6 @@ public sealed class EnumModelBinderTest
 {
     private readonly ILogger<EnumModelBinder> _logger;
     private readonly IOptions<JsonOptions> _options;
-    private readonly Mock<ModelMetadata> _sampleValueModelMetaData;
     private ModelBindingResult? _bindingResult;
 
     public EnumModelBinderTest()
@@ -34,17 +32,6 @@ public sealed class EnumModelBinderTest
         _logger = new LoggerFactory().CreateLogger<EnumModelBinder>();
         _options = Options.Create(new JsonOptions());
         _options.Value.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-
-        PropertyInfo propertyInfo = typeof(EnumModelBinderTest)
-            .GetProperty(nameof(EnumProperty),
-                BindingFlags.Public | BindingFlags.Instance)!;
-        ModelMetadataIdentity metaDataIdentity = ModelMetadataIdentity.ForProperty(
-            propertyInfo,
-            typeof(SampleValue),
-            typeof(EnumModelBinderTest));
-
-        _sampleValueModelMetaData = new Mock<ModelMetadata>(metaDataIdentity);
     }
 
     public SampleValue EnumProperty { get; } = SampleValue.Alpha;
