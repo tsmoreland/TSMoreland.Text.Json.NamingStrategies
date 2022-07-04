@@ -36,6 +36,8 @@ public sealed class Generator : ISourceGenerator
     private static IEnumerable<SourceFile> GetSourceFiles()
     {
         yield return StringExtensionsSourceFactory.Build();
+        yield return CaseSeparatedEnumNamingStrategyFactory.Build("SnakeCase", "ToSnakeCase");
+        yield return CaseSeparatedEnumNamingStrategyFactory.Build("KebabCase", "ToKebabCase");
     }
 
 

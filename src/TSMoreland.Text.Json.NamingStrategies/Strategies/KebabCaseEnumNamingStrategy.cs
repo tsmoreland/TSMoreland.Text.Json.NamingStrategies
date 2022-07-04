@@ -15,7 +15,7 @@ using System.Text.Json;
 
 namespace TSMoreland.Text.Json.NamingStrategies.Strategies;
 
-public sealed partial class SnakeCaseEnumNamingStrategy : IEnumNamingStrategy
+public sealed partial class KebabCaseEnumNamingStrategy : IEnumNamingStrategy
 {
     /// <inheritdoc />
     public partial bool CanConvert(Type type);
