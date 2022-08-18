@@ -3,10 +3,10 @@
     <Nullable>enable</Nullable>
     <LangVersion>10</LangVersion>
 
-    <VersionPrefix>1.0.0.0</VersionPrefix>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-    <AssemblyInformationalVersion>1.0.0.0</AssemblyInformationalVersion>
+    <VersionPrefix>1.0.1.0</VersionPrefix>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.1.0</AssemblyFileVersion>
+    <AssemblyInformationalVersion>1.0.1.0</AssemblyInformationalVersion>
 
     <Product>TSMoreland.Text.Json.NamingStrategies</Product>
     <Copyright>Copyright © 2022 Terry Moreland</Copyright>

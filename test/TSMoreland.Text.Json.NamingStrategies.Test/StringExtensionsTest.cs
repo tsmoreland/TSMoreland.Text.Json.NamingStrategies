@@ -40,7 +40,7 @@ public class StringExtensionsTest
         actual.Should().Be(expected);
     }
 
-    private static IEnumerable<object[]> SnakeCaseData()
+    public static IEnumerable<object[]> SnakeCaseData()
     {
         yield return new object[] { "FooBar", "foo_bar" };
         yield return new object[] { "fooBar", "foo_bar" };
@@ -52,7 +52,7 @@ public class StringExtensionsTest
         yield return new object[] { "  Alpha1_Bravo2_Charlie3  ", "alpha1_bravo2_charlie3" };
     }
 
-    private static IEnumerable<object[]> KebabCaseData()
+    public static IEnumerable<object[]> KebabCaseData()
     {
         yield return new object[] { "FooBar", "foo-bar" };
         yield return new object[] { "fooBar", "foo-bar" };

@@ -179,7 +179,7 @@ public sealed class JsonStrategizedStringEnumConverterTest
 
 
 
-    private static IEnumerable<object[]> EnumValues()
+    public static IEnumerable<object[]> EnumValues()
     {
         return Enum.GetValues<SampleValue>().Select(value => new object[] { value });
     }
