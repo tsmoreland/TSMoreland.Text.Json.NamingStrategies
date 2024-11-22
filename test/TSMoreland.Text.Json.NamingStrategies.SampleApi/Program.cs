@@ -26,7 +26,6 @@ builder.Services
             jsonOutputFormatter.SupportedMediaTypes.Remove("text/json");
         }
 
-
     })
     .AddXmlSerializerFormatters()
     .AddJsonOptions(options =>
@@ -54,7 +53,10 @@ app.Use((HttpContext context, RequestDelegate next) =>
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
 
 #if !NET9_0_OR_GREATER
 app.UseSwagger();

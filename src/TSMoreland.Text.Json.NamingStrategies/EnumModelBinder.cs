@@ -1,16 +1,3 @@
-﻿//
-// Copyright © 2022 Terry Moreland
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -34,7 +21,6 @@ public class EnumModelBinder : IModelBinder
     {
     }
 
-
     /// <summary>
     /// Initialises a new instance of the <see cref="EnumModelBinder"/> class.
     /// </summary>
@@ -55,8 +41,8 @@ public class EnumModelBinder : IModelBinder
             return Task.FromException(new ArgumentNullException(nameof(bindingContext)));
         }
 
-        string modelName = bindingContext.ModelName;
-        ValueProviderResult providerResult = bindingContext.ValueProvider.GetValue(modelName);
+        var modelName = bindingContext.ModelName;
+        var providerResult = bindingContext.ValueProvider.GetValue(modelName);
         if (providerResult == ValueProviderResult.None)
         {
             return Task.CompletedTask;
@@ -76,9 +62,9 @@ public class EnumModelBinder : IModelBinder
                 return Task.CompletedTask;
             }
 
-            string jsonifiedValue = string.Create(value.Length + 2, value, static (output, state) =>
+            var jsonifiedValue = string.Create(value.Length + 2, value, static (output, state) =>
             {
-                ReadOnlySpan<char> input = state.AsSpan();
+                var input = state.AsSpan();
                 output[0] = '"';
                 int i;
                 for (i = 0; i < input.Length; i++)
@@ -88,7 +74,7 @@ public class EnumModelBinder : IModelBinder
                 output[i + 1] = '"';
             });
 
-            object? deserializedValue = JsonSerializer.Deserialize(jsonifiedValue, bindingContext.ModelMetadata.ModelType, _options);
+            var deserializedValue = JsonSerializer.Deserialize(jsonifiedValue, bindingContext.ModelMetadata.ModelType, _options);
             bindingContext.Result = ModelBindingResult.Success(deserializedValue);
         }
         catch (Exception ex)
@@ -96,7 +82,6 @@ public class EnumModelBinder : IModelBinder
             _logger.LogError(ex, "Failed to parse JSON into {EnumType}", bindingContext.ModelMetadata.ModelType);
             bindingContext.ModelState.TryAddModelError(modelName, "Unable to convert string to enum");
         }
-
 
         return Task.CompletedTask;
     }

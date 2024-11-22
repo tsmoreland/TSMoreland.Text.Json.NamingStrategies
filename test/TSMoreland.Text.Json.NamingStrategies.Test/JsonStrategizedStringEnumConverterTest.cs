@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright © 2022 Terry Moreland
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
@@ -155,7 +155,6 @@ public sealed class JsonStrategizedStringEnumConverterTest
         strategy.ConvertOrThrowCallCount.Should().Be(0);
     }
 
-
     [Theory]
     [MemberData(nameof(EnumValues))]
     public void Write_ReturnsStrategyConvertToEncodedResult(SampleValue source)
@@ -176,8 +175,6 @@ public sealed class JsonStrategizedStringEnumConverterTest
 
         actual.Should().Be(expected);
     }
-
-
 
     public static IEnumerable<object[]> EnumValues()
     {
