@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+    <!-- ignore warning regarding use of ConfigureAwait as using it in a test would cause problems - and cause another warning -->
+    <NoWarn>CA2007</NoWarn>
+    
   </PropertyGroup>
 
   <ItemGroup>
