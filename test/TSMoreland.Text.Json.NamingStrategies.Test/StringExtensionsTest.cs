@@ -6,9 +6,9 @@ public class StringExtensionsTest
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   \t   ")]
-    public void ToSnakeCase_ReturnsEmpty_WhenSourceIsNullOrWhitespace(string source)
+    public void ToSnakeCase_ReturnsEmpty_WhenSourceIsNullOrWhitespace(string? source)
     {
-        string actual = source.ToSnakeCase();
+        var actual = source!.ToSnakeCase();
         actual.Should().BeNullOrEmpty();
     }
 
@@ -16,9 +16,9 @@ public class StringExtensionsTest
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   \t   ")]
-    public void ToKebabCase_ReturnsEmpty_WhenSourceIsNullOrWhitespace(string source)
+    public void ToKebabCase_ReturnsEmpty_WhenSourceIsNullOrWhitespace(string? source)
     {
-        string actual = source.ToKebabCase();
+        var actual = source!.ToKebabCase();
         actual.Should().BeNullOrEmpty();
     }
 
@@ -26,7 +26,7 @@ public class StringExtensionsTest
     [MemberData(nameof(SnakeCaseData))]
     public void ToSnakeCase_ReturnsSnakeCaseString_WhenSourceIsNotNullOrEmpty(string source, string expected)
     {
-        string actual = source.ToSnakeCase();
+        var actual = source.ToSnakeCase();
 
         actual.Should().Be(expected);
     }
@@ -35,7 +35,7 @@ public class StringExtensionsTest
     [MemberData(nameof(KebabCaseData))]
     public void ToKebabCase_ReturnsKebabCaseString_WhenSourceIsNotNullOrEmpty(string source, string expected)
     {
-        string actual = source.ToKebabCase();
+        var actual = source.ToKebabCase();
 
         actual.Should().Be(expected);
     }

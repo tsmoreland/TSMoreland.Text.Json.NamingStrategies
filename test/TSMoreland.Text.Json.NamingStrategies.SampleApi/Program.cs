@@ -1,10 +1,9 @@
-using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
 using TSMoreland.Text.Json.NamingStrategies;
 using TSMoreland.Text.Json.NamingStrategies.Strategies;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
@@ -15,13 +14,13 @@ builder.Services
         options.RespectBrowserAcceptHeader = true;
         options.ModelBinderProviders.Insert(0, new EnumModelBinderProvider());
 
-        SystemTextJsonInputFormatter? jsonInputFormatter = options.InputFormatters?.OfType<SystemTextJsonInputFormatter>().FirstOrDefault();
+        var jsonInputFormatter = options.InputFormatters?.OfType<SystemTextJsonInputFormatter>().FirstOrDefault();
         if (jsonInputFormatter is not null && jsonInputFormatter.SupportedMediaTypes.Contains("text/json"))
         {
             jsonInputFormatter.SupportedMediaTypes.Remove("text/json");
         }
 
-        SystemTextJsonOutputFormatter? jsonOutputFormatter = options.OutputFormatters?.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
+        var jsonOutputFormatter = options.OutputFormatters?.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
         if (jsonOutputFormatter is not null && jsonOutputFormatter.SupportedMediaTypes.Contains("text/json"))
         {
             jsonOutputFormatter.SupportedMediaTypes.Remove("text/json");
@@ -36,34 +35,36 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStrategizedStringEnumConverterFactory(new SnakeCaseEnumNamingStrategy()));
     });
 
-builder.Services
-    .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+builder.Services.AddOpenApi();
 
-WebApplication app = builder.Build();
+var app = builder.Build();
 
-app.Use((context, next) =>
+app.Use((HttpContext context, RequestDelegate next) =>
 {
-    IHeaderDictionary headers = context.Response.Headers;
-    headers.Add("Cache-Control", new StringValues("no-store"));
-    headers.Add("X-Content-Type-Options", new StringValues("nosniff"));
-    headers.Add("X-Frame-Options", new StringValues("DENY"));
-    headers.Add("x-xss-protection", new StringValues("1; mode=block"));
-    headers.Add("Expect-CT", new StringValues("max-age=0, enforce"));
-    headers.Add("referrer-policy", new StringValues("strict-origin-when-cross-origin"));
-    headers.Add("X-Permitted-Cross-Domain-Policies", new StringValues("none"));
-    return next();
+    var headers = context.Response.Headers;
+    headers.Append("Cache-Control", new StringValues("no-store"));
+    headers.Append("X-Content-Type-Options", new StringValues("nosniff"));
+    headers.Append("X-Frame-Options", new StringValues("DENY"));
+    headers.Append("x-xss-protection", new StringValues("1; mode=block"));
+    headers.Append("Expect-CT", new StringValues("max-age=0, enforce"));
+    headers.Append("referrer-policy", new StringValues("strict-origin-when-cross-origin"));
+    headers.Append("X-Permitted-Cross-Domain-Policies", new StringValues("none"));
+    return next(context);
 });
 
-app.UseProblemDetails();
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+
+#if !NET9_0_OR_GREATER
 app.UseSwagger();
+#endif
 app.UseSwaggerUI(options =>
 {
     options.DisplayOperationId();
     options.DisplayRequestDuration();
 });
+
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

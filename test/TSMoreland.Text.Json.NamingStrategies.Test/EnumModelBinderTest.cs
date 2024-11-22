@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright © 2022 Terry Moreland
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -39,7 +40,7 @@ public sealed class EnumModelBinderTest
     [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenLoggerIsNull()
     {
-        ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _ = new EnumModelBinder(_options, null!));
+        var ex = Assert.Throws<ArgumentNullException>(() => _ = new EnumModelBinder(_options, null!));
         ex.Should()
             .NotBeNull()
             .And
@@ -49,7 +50,7 @@ public sealed class EnumModelBinderTest
     [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenOptionsIsNull()
     {
-        ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _ = new EnumModelBinder(null!, _logger));
+        var ex = Assert.Throws<ArgumentNullException>(() => _ = new EnumModelBinder(null!, _logger));
         ex.Should()
             .NotBeNull()
             .And
@@ -60,7 +61,7 @@ public sealed class EnumModelBinderTest
     public void BindModelAsync_ReturnsFailedTask_WhenBindingContextIsNull()
     {
         EnumModelBinder binder = new(_options, _logger);
-        Task task = binder.BindModelAsync(null!);
+        var task = binder.BindModelAsync(null!);
         task.Should().Match<Task>(t => t.IsFaulted);
     }
 
@@ -70,13 +71,13 @@ public sealed class EnumModelBinderTest
     /// be better placed to verify this
     /// </remarks>
     [Fact]
-    public void BindModelAsync_SetsSuccessfulBindingResult_WhenModelTypeIsEnumAndStringCanBeDeserialized()
+    public async Task BindModelAsync_SetsSuccessfulBindingResult_WhenModelTypeIsEnumAndStringCanBeDeserialized()
     {
-        (Mock<MockModelBindingContext> context, ModelStateDictionary modelState) =
+        var (context, modelState) =
             ArrangeBindModel("key", SampleValue.Bravo.ToString(), typeof(SampleValue));
         EnumModelBinder binder = new(_options, _logger);
 
-        binder.BindModelAsync(context.Object).Wait(CancellationToken.None);
+        await binder.BindModelAsync(context.Object);
 
         _bindingResult.Should()
             .NotBeNull()
@@ -87,13 +88,13 @@ public sealed class EnumModelBinderTest
     }
 
     [Fact]
-    public void BindModelAsync_SetsSuccessfulBindingResult_WhenModelTypeIsEnumAndNumberCanBeDeserialized()
+    public async Task BindModelAsync_SetsSuccessfulBindingResult_WhenModelTypeIsEnumAndNumberCanBeDeserialized()
     {
-        (Mock<MockModelBindingContext> context, ModelStateDictionary modelState) =
-            ArrangeBindModel("key", ((int)SampleValue.Bravo).ToString(), typeof(SampleValue));
+        var (context, modelState) =
+            ArrangeBindModel("key", ((int)SampleValue.Bravo).ToString(CultureInfo.InvariantCulture), typeof(SampleValue));
         EnumModelBinder binder = new(_options, _logger);
 
-        binder.BindModelAsync(context.Object).Wait(CancellationToken.None);
+        await binder.BindModelAsync(context.Object);
 
         _bindingResult.Should()
             .NotBeNull()
@@ -128,10 +129,7 @@ public sealed class EnumModelBinderTest
 
     public abstract class MockModelBindingContext : ModelBindingContext
     {
-        // ReSharper disable once PublicConstructorInAbstractClass
-#pragma warning disable S3442 // "abstract" classes should not have "public" constructors
-        public MockModelBindingContext()
-#pragma warning restore S3442 // "abstract" classes should not have "public" constructors
+        protected MockModelBindingContext()
         {
         }
     }
