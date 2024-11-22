@@ -77,7 +77,7 @@ public sealed class EnumModelBinderTest
             ArrangeBindModel("key", SampleValue.Bravo.ToString(), typeof(SampleValue));
         EnumModelBinder binder = new(_options, _logger);
 
-        await binder.BindModelAsync(context.Object).ConfigureAwait(false);
+        await binder.BindModelAsync(context.Object);
 
         _bindingResult.Should()
             .NotBeNull()
@@ -94,7 +94,7 @@ public sealed class EnumModelBinderTest
             ArrangeBindModel("key", ((int)SampleValue.Bravo).ToString(CultureInfo.InvariantCulture), typeof(SampleValue));
         EnumModelBinder binder = new(_options, _logger);
 
-        await binder.BindModelAsync(context.Object).ConfigureAwait(false);
+        await binder.BindModelAsync(context.Object);
 
         _bindingResult.Should()
             .NotBeNull()
